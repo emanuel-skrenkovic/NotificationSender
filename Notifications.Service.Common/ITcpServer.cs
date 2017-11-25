@@ -10,7 +10,7 @@ namespace Notifications.Service.Common
     {
         bool IsRunning { get; }
 
-        IAsyncResult Start(Action<object> callback, object state);
+        void Start(Action<object, object> callback, object state);
 
         void Stop();
     }

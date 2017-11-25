@@ -15,7 +15,7 @@ namespace Notifications.Service
     {
         private TcpListener listener;
 
-        private Action<object> callback;
+        private Action<object, object> callback;
         private bool isRunning;
 
         public bool IsRunning { get { return isRunning; } }
@@ -26,14 +26,14 @@ namespace Notifications.Service
             listener = new TcpListener(address, port);
         }
 
-        public IAsyncResult Start(Action<object> callback, object state)
+        public void Start(Action<object, object> callback, object state)
         {
             this.callback = callback;
 
             isRunning = true;
 
             listener.Start();
-            return listener.BeginAcceptTcpClient(ProcessResult, state);
+            listener.BeginAcceptTcpClient(ProcessResult, state);
         }
 
         public void Stop()
@@ -46,14 +46,12 @@ namespace Notifications.Service
         {
             InvokeCallback(res);
 
-            //listener.Start();
-            //listener.BeginAcceptTcpClient(ProcessResult, res.AsyncState);
+            listener.Start();
+            listener.BeginAcceptTcpClient(ProcessResult, res.AsyncState);
         }
 
         private void InvokeCallback(IAsyncResult res)
         {
-            isRunning = false;
-
             using (var client = listener.EndAcceptTcpClient(res))
             using (var ns = client.GetStream())
             {
@@ -61,7 +59,7 @@ namespace Notifications.Service
 
                 try
                 {
-                    callback.Invoke(message);
+                    callback.Invoke(message, res.AsyncState);
                 }
                 catch (Exception e)
                 {

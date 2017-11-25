@@ -46,6 +46,7 @@
     <Reference Include="Windows.UI" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NetworkService.cs" />
     <Compile Include="TcpSender.cs" />
     <Compile Include="TcpServer.cs" />
     <Compile Include="TcpService.cs" />

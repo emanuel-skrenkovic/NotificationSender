@@ -36,6 +36,30 @@ namespace Notifications.Service
             return SendInternalAsync(serializedMsg, host, port);
         }
 
+        public Task SendBatchAsync(string message, List<string> hosts, int port)
+        {
+            var taskList = new List<Task>();
+
+            foreach (var host in hosts)
+            {
+                taskList.Add(SendAsync(message, host, port));
+            }
+
+            return Task.WhenAll(taskList);
+        }
+
+        public Task SendBatchAsync<TMessage>(TMessage messageObj, List<string> hosts, int port)
+        {
+            var taskList = new List<Task>();
+
+            foreach (var host in hosts)
+            {
+                taskList.Add(SendAsync(messageObj, host, port));
+            }
+
+            return Task.WhenAll(taskList);
+        }
+
         private void SendInternal(string message, string host, int port)
         {
             using (var client = new TcpSender())

@@ -40,7 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClientsList.cs" />
     <Compile Include="NotificationMessage.cs" />
+    <Compile Include="PingRequest.cs" />
+    <Compile Include="PingResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowsNotification.cs" />
   </ItemGroup>

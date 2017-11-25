@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IHttpService.cs" />
+    <Compile Include="INetworkService.cs" />
     <Compile Include="ITcpSender.cs" />
     <Compile Include="ITcpServer.cs" />
     <Compile Include="ITcpService.cs" />

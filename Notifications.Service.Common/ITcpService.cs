@@ -15,5 +15,9 @@ namespace Notifications.Service.Common
         Task SendAsync(string message, string host, int port);
 
         Task SendAsync<TMessage>(TMessage messageObj, string host, int port);
+
+        Task SendBatchAsync(string message, List<string> hosts, int port);
+
+        Task SendBatchAsync<TMessage>(TMessage messageObj, List<string> hosts, int port);
     }
 }

@@ -40,6 +40,9 @@ namespace Notifications.Client
             builder.RegisterType<WindowsNotificationService>()
                 .As<IWindowsNotificationService>();
 
+            builder.RegisterType<NetworkService>()
+                .As<INetworkService>();
+
             builder.RegisterType<TcpService>()
                 .As<ITcpService>();
 
