@@ -22,39 +22,13 @@ namespace Notifications.Client
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Form1());
 
-            var container = ConfigureDependencyInjection();
+            var container = AppStart.GetDIContainer();
 
             var icon = container.Resolve<IProcessIcon>();
 
             icon.Display();
 
             Application.Run();
-        }
-
-        private static IContainer ConfigureDependencyInjection()
-        {
-            var builder = new ContainerBuilder();
-            
-            // services
-
-            builder.RegisterType<WindowsNotificationService>()
-                .As<IWindowsNotificationService>();
-
-            builder.RegisterType<NetworkService>()
-                .As<INetworkService>();
-
-            builder.RegisterType<TcpService>()
-                .As<ITcpService>();
-
-            builder.RegisterType<TcpSender>()
-                .As<ITcpSender>();
-
-            // windows forms
-
-            builder.RegisterType<ProcessIcon>()
-                .As<IProcessIcon>();
-
-            return builder.Build();
         }
     }
 }

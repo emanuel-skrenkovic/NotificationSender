@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppStart.cs" />
     <Compile Include="IProcessIcon.cs" />
     <Compile Include="ProcessIcon.cs" />
     <Compile Include="Program.cs" />
