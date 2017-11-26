@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppStart.cs" />
+    <Compile Include="Consts\NetworkConsts.cs" />
     <Compile Include="IProcessIcon.cs" />
     <Compile Include="ProcessIcon.cs" />
     <Compile Include="Program.cs" />

@@ -20,11 +20,6 @@ namespace Notifications.Client
 
     public class ProcessIcon : IProcessIcon, IDisposable
     {
-        private readonly string Host = "192.168.5.10";
-        private readonly int Port = 14769;
-
-        private List<string> availableClients;
-
         private NotifyIcon ni;
 
         private System.Drawing.Icon offIcon;
@@ -43,8 +38,6 @@ namespace Notifications.Client
 
             ni.MouseClick += NotifyIcon_MouseClick;
 
-            availableClients = new List<string>();
-
             this.tcpService = tcpService;
             this.networkService = networkService;
             this.windowsNotificationService = windowsNotificationService;
@@ -57,7 +50,8 @@ namespace Notifications.Client
         {
             if (server == null)
             {
-                server = new TcpServer(Host, Port);
+                var ip = networkService.GetIpString();
+                server = new TcpServer(ip, NetworkConsts.TCP_PORT);
                 
                 if (!server.IsRunning)
                     server.Start(ProcessRequest, null);
@@ -101,9 +95,9 @@ namespace Notifications.Client
                 {
                     var message = CreateNotificationMessage();
 
-                    var availableIps = await networkService.GetClientsAsync("192.168.5");
+                    var availableIps = await networkService.GetClientsAsync();
 
-                    await tcpService.SendBatchAsync(message, availableIps, Port);
+                    await tcpService.SendBatchAsync(message, availableIps, NetworkConsts.TCP_PORT);
                 } 
                 catch (Exception ex)
                 {

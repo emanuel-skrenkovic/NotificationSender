@@ -13,13 +13,12 @@ namespace Notifications.Service
 {
     public class NetworkService : INetworkService
     {
-        public List<string> GetClients(string subnet)
+        public List<string> GetClients()
         {
             var replyList = new System.Collections.Concurrent.ConcurrentBag<PingReply>();
 
-            var sw = new Stopwatch();
+            var subnet = GetSubnet();
 
-            sw.Start();
             for (int i = 2; i < 255; i++)
             {
                 string ip = $"{subnet}.{i}";
@@ -32,11 +31,7 @@ namespace Notifications.Service
                         replyList.Add(reply);
                 }
             }
-            sw.Stop();
-            var res = sw.Elapsed;
-            sw.Reset();
 
-            sw.Start();
             Parallel.For(2, 256, (i) =>
             {
                 string ip = $"{subnet}.{i}";
@@ -49,9 +44,6 @@ namespace Notifications.Service
                         replyList.Add(reply);
                 }
             });
-            sw.Stop();
-            var res2 = sw.Elapsed;
-            sw.Reset();
 
             var clientsList = new List<string>();
 
@@ -63,9 +55,11 @@ namespace Notifications.Service
             return clientsList;
         }
 
-        public async Task<List<string>> GetClientsAsync(string subnet)
+        public async Task<List<string>> GetClientsAsync()
         {
             var pingList = new List<Task<PingReply>>();
+
+            var subnet = GetSubnet();
 
             for (int i = 2; i < 255; i++)
             {
@@ -127,6 +121,24 @@ namespace Notifications.Service
         public string GetIpString()
         {
             return GetIp().ToString();
+        }
+
+        public IPAddress GetDefaultGateway()
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .SelectMany(n => n.GetIPProperties()?.GatewayAddresses)
+                .Select(g => g?.Address)
+                .Where(a => a != null)
+                .FirstOrDefault();
+        }
+
+        public string GetSubnet()
+        {
+            var defaultGateway = GetDefaultGateway().ToString();
+            return defaultGateway.Remove(defaultGateway.Length - 2);
         }
     }
 }

@@ -14,8 +14,12 @@ namespace Notifications.Service.Common
 
         IPAddress GetIp();
 
-        List<string> GetClients(string subnet);
+        List<string> GetClients();
 
-        Task<List<string>> GetClientsAsync(string subnet);
+        Task<List<string>> GetClientsAsync();
+
+        IPAddress GetDefaultGateway();
+
+        string GetSubnet();
     }
 }
