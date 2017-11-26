@@ -36,6 +36,22 @@ namespace Notifications.Service
             return SendInternalAsync(serializedMsg, host, port);
         }
 
+        public void SendBatch(string message, List<string> hosts, int port)
+        {
+            foreach (var host in hosts)
+            {
+                Send(message, host, port);
+            }
+        }
+
+        public void SendBatch<TMessage>(TMessage messageObj, List<string> hosts, int port)
+        {
+            foreach (var host in hosts)
+            {
+                Send(messageObj, host, port);
+            }
+        }
+
         public Task SendBatchAsync(string message, List<string> hosts, int port)
         {
             var taskList = new List<Task>();
@@ -64,15 +80,29 @@ namespace Notifications.Service
         {
             using (var client = new TcpSender())
             {
-                client.Send(message, host, port);
+                try
+                {
+                    client.Send(message, host, port);
+                }
+                catch (Exception)
+                {
+                    // if the ip doesn't respond then it doesn't have a client 
+                }
             }
         }
 
-        private Task SendInternalAsync(string message, string host, int port)
+        private async Task SendInternalAsync(string message, string host, int port)
         {
             using (var client = new TcpSender())
             {
-                return client.SendAsync(message, host, port);
+                try
+                {
+                    await client.SendAsync(message, host, port);
+                }
+                catch(Exception)
+                {
+                    // if the ip doesn't respond then it doesn't have a client
+                }
             }
         }
     }

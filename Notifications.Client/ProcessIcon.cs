@@ -60,7 +60,7 @@ namespace Notifications.Client
                 server = new TcpServer(Host, Port);
                 
                 if (!server.IsRunning)
-                    server.Start(ProcessPing, null);
+                    server.Start(ProcessRequest, null);
             }
 
             ni.Visible = true;
@@ -85,43 +85,12 @@ namespace Notifications.Client
                 var title = message.WindowsNotification.Title;
                 var text = message.WindowsNotification.Text;
 
-                windowsNotificationService.ShowNotification("test", "test2");
+                windowsNotificationService.ShowNotification(title, text);
             }
             else
             {
                 ni.Icon = offIcon;
             }
-        }
-
-        private void ProcessPingResponse(PingResponse pingResponse)
-        {
-            availableClients.Add(pingResponse.Address);
-        }
-
-        private void ProcessPingRequest(PingRequest pingRequest)
-        {
-            var response = new PingResponse
-            {
-                Address = networkService.GetIpString(),
-            };
-
-            tcpService.Send(response, pingRequest.RequestorAddress, Port);
-        }
-
-        private void ProcessPing(object res, object state)
-        {
-            var serializedMsg = res as string;
-
-            var pingRequest = JsonConvert.DeserializeObject<PingRequest>(serializedMsg);
-
-            if (pingRequest == null)
-            {
-                var pingResponse = JsonConvert.DeserializeObject<PingResponse>(serializedMsg);
-
-                ProcessPingResponse(pingResponse);
-            }
-
-            ProcessPingRequest(pingRequest);
         }
 
         private async void NotifyIcon_MouseClick(object sender, MouseEventArgs e)
@@ -132,27 +101,10 @@ namespace Notifications.Client
                 {
                     var message = CreateNotificationMessage();
 
-                    await tcpService.SendAsync(message, Host, Port);
-                } 
-                catch (Exception ex)
-                {
-                    DisplayError();
-                }
-            }
-
-            if (e.Button == MouseButtons.Middle)
-            {
-                try
-                {
-                    var message = new PingRequest
-                    {
-                        RequestorAddress = networkService.GetIpString(),
-                    };
-
                     var availableIps = await networkService.GetClientsAsync("192.168.5");
 
                     await tcpService.SendBatchAsync(message, availableIps, Port);
-                }
+                } 
                 catch (Exception ex)
                 {
                     DisplayError();
