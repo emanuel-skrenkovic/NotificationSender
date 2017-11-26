@@ -12,8 +12,6 @@ namespace Notifications.Service.Common
 
         string GetIpString();
 
-        Task<string> GetIpStringAsync();
-
         IPAddress GetIp();
 
         List<string> GetClients(string subnet);

@@ -23,6 +23,8 @@ namespace Notifications.Client
         private readonly string Host = "192.168.5.10";
         private readonly int Port = 14769;
 
+        private List<string> availableClients;
+
         private NotifyIcon ni;
 
         private System.Drawing.Icon offIcon;
@@ -41,6 +43,8 @@ namespace Notifications.Client
 
             ni.MouseClick += NotifyIcon_MouseClick;
 
+            availableClients = new List<string>();
+
             this.tcpService = tcpService;
             this.networkService = networkService;
             this.windowsNotificationService = windowsNotificationService;
@@ -56,7 +60,7 @@ namespace Notifications.Client
                 server = new TcpServer(Host, Port);
                 
                 if (!server.IsRunning)
-                    server.Start(ProcessPingRequest, new ClientsList { AvailableClients = new List<string>() });
+                    server.Start(ProcessPing, null);
             }
 
             ni.Visible = true;
@@ -89,28 +93,38 @@ namespace Notifications.Client
             }
         }
 
-        private void ProcessPingRequest(object res, object state)
+        private void ProcessPingResponse(PingResponse pingResponse)
         {
-            var serializedMsg = res as string;
+            availableClients.Add(pingResponse.Address);
+        }
 
-            if (serializedMsg == null || serializedMsg == "ping response")
-                return;
-
-            var message = JsonConvert.DeserializeObject<PingRequest>(serializedMsg);
-
-            var clientsList = state as ClientsList;
-
-            clientsList.AvailableClients.Add(Host);
-
+        private void ProcessPingRequest(PingRequest pingRequest)
+        {
             var response = new PingResponse
             {
                 Address = networkService.GetIpString(),
             };
 
-            tcpService.Send(response, Host, Port);
+            tcpService.Send(response, pingRequest.RequestorAddress, Port);
         }
 
-        private void NotifyIcon_MouseClick(object sender, MouseEventArgs e)
+        private void ProcessPing(object res, object state)
+        {
+            var serializedMsg = res as string;
+
+            var pingRequest = JsonConvert.DeserializeObject<PingRequest>(serializedMsg);
+
+            if (pingRequest == null)
+            {
+                var pingResponse = JsonConvert.DeserializeObject<PingResponse>(serializedMsg);
+
+                ProcessPingResponse(pingResponse);
+            }
+
+            ProcessPingRequest(pingRequest);
+        }
+
+        private async void NotifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -118,7 +132,7 @@ namespace Notifications.Client
                 {
                     var message = CreateNotificationMessage();
 
-                    tcpService.Send(message, Host, Port);
+                    await tcpService.SendAsync(message, Host, Port);
                 } 
                 catch (Exception ex)
                 {
@@ -135,9 +149,9 @@ namespace Notifications.Client
                         RequestorAddress = networkService.GetIpString(),
                     };
 
-                    var availableIps = networkService.GetClients("192.168.5");
+                    var availableIps = await networkService.GetClientsAsync("192.168.5");
 
-                    tcpService.SendBatchAsync(message, availableIps, Port);
+                    await tcpService.SendBatchAsync(message, availableIps, Port);
                 }
                 catch (Exception ex)
                 {

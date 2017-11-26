@@ -81,8 +81,13 @@ namespace Notifications.Service
             {
                 var stringMessage = await streamReader.ReadToEndAsync();
 
-                return Regex.Replace(stringMessage, @"\t|\n|\r", "");
+                return SanitizeResultString(stringMessage);
             }
+        }
+
+        private string SanitizeResultString(string message)
+        {
+            return Regex.Replace(message, @"\t|\n|\r", "");
         }
     }
 }
