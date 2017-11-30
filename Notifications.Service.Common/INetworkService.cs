@@ -14,9 +14,9 @@ namespace Notifications.Service.Common
 
         IPAddress GetIp();
 
-        List<string> GetClients();
+        List<string> GetAvailableNetworkPcs();
 
-        Task<List<string>> GetClientsAsync();
+        Task<List<string>> GetAvailableNetworkPcsAsync();
 
         IPAddress GetDefaultGateway();
 

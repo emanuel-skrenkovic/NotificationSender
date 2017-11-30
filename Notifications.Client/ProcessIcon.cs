@@ -96,7 +96,7 @@ namespace Notifications.Client
                 {
                     var message = CreateNotificationMessage();
 
-                    var availableIps = await networkService.GetClientsAsync();
+                    var availableIps = await networkService.GetAvailableNetworkPcsAsync();
 
                     await tcpService.SendBatchAsync(message, availableIps, NetworkConsts.TCP_PORT);
                 } 

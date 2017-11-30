@@ -13,7 +13,7 @@ namespace Notifications.Service
 {
     public class NetworkService : INetworkService
     {
-        public List<string> GetClients()
+        public List<string> GetAvailableNetworkPcs()
         {
             var replyList = new System.Collections.Concurrent.ConcurrentBag<PingReply>();
 
@@ -55,7 +55,7 @@ namespace Notifications.Service
             return clientsList;
         }
 
-        public async Task<List<string>> GetClientsAsync()
+        public async Task<List<string>> GetAvailableNetworkPcsAsync()
         {
             var pingList = new List<Task<PingReply>>();
 
