@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Notifications.Client.Resources;
 using Notifications.Models;
 using Notifications.Service;
 using Notifications.Service.Common;
@@ -42,8 +43,8 @@ namespace Notifications.Client
             this.networkService = networkService;
             this.windowsNotificationService = windowsNotificationService;
 
-            offIcon = new System.Drawing.Icon(@"D:\downloads\Sora-Meliae-Matrilineare-Mimes-image-x-ico.ico");
-            onIcon = new System.Drawing.Icon(@"D:\downloads\Dtafalonso-Android-Lollipop-Youtube.ico");
+            offIcon = new System.Drawing.Icon(Images.GreenIcon);
+            onIcon = new System.Drawing.Icon(Images.RedIcon);
         }
 
         public void Display()
