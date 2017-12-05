@@ -71,12 +71,7 @@ namespace Notifications.Service
                 }
             }
 
-            var sw = new Stopwatch();
-            sw.Start();
             var replyList = await Task.WhenAll(pingList);
-            sw.Stop();
-
-            var res = sw.Elapsed;
 
             var clientsList = new List<string>();
 
