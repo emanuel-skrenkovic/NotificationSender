@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service.Common
 {
-    public interface ITcpServer
+    public interface IController
     {
-        bool IsRunning { get; }
+        void HandleRouting<TMessage>(string route, TMessage message);
 
-        void Start(Action<object, object> callback, object state);
-
-        void Stop();
+        void RegisterRoute(string route, Action<object, object> callback);
     }
 }

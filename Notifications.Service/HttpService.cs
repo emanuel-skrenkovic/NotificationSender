@@ -8,32 +8,37 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service
 {
-    public class TcpService : ISenderService
+    public class HttpService : ISenderService
     {
-        public TcpService() { }
+        private ISender client;
+
+        public HttpService(ISender client)
+        {
+            this.client = client;           
+        }
 
         public void Send(string message, string host, int port)
         {
-            SendInternal(message, host, port);
+            client.Send(message, host, port);
         }
-        
+
         public void Send<TMessage>(TMessage messageObj, string host, int port)
         {
-            string serializedMsg = JsonConvert.SerializeObject(messageObj);
+            string serializedMessage = JsonConvert.SerializeObject(messageObj);
 
-            SendInternal(serializedMsg, host, port);
+            client.Send(serializedMessage, host, port);
         }
 
         public Task SendAsync(string message, string host, int port)
         {
-            return SendInternalAsync(message, host, port);
+            return client.SendAsync(message, host, port);
         }
 
         public Task SendAsync<TMessage>(TMessage messageObj, string host, int port)
         {
-            string serializedMsg = JsonConvert.SerializeObject(messageObj);
+            string serializedMessage = JsonConvert.SerializeObject(messageObj);
 
-            return SendInternalAsync(serializedMsg, host, port);
+            return client.SendAsync(serializedMessage, host, port);
         }
 
         public void SendBatch(string message, List<string> hosts, int port)
@@ -74,36 +79,6 @@ namespace Notifications.Service
             }
 
             return Task.WhenAll(taskList);
-        }
-
-        private void SendInternal(string message, string host, int port)
-        {
-            using (var client = new TcpSender())
-            {
-                try
-                {
-                    client.Send(message, host, port);
-                }
-                catch (Exception)
-                {
-                    // if the ip doesn't respond then it doesn't have a client 
-                }
-            }
-        }
-
-        private async Task SendInternalAsync(string message, string host, int port)
-        {
-            using (var client = new TcpSender())
-            {
-                try
-                {
-                    await client.SendAsync(message, host, port);
-                }
-                catch(Exception)
-                {
-                    // if the ip doesn't respond then it doesn't have a client
-                }
-            }
         }
     }
 }

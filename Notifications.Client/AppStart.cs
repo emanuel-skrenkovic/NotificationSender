@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Notifications.Common;
 using Notifications.Service;
 using Notifications.Service.Common;
 using System;
@@ -28,17 +29,22 @@ namespace Notifications.Client
 
         private static void RegisterServiceTypes(ContainerBuilder builder)
         {
+            builder.Register((c, p) => new HttpServer("192.168.5.12"))
+                .As<IServer>().SingleInstance();
+
             builder.RegisterType<WindowsNotificationService>()
                .As<IWindowsNotificationService>();
 
             builder.RegisterType<NetworkService>()
                 .As<INetworkService>();
 
-            builder.RegisterType<TcpService>()
-                .As<ITcpService>();
+            builder.RegisterType<HttpService>()
+                .As<ISenderService>();
 
-            builder.RegisterType<TcpSender>()
-                .As<ITcpSender>();
+            builder.RegisterType<HttpSender>()
+                .As<ISender>();
+
+            builder.RegisterType<UtilityService>();
         }
 
         private static void RegisterFormsTypes(ContainerBuilder builder)

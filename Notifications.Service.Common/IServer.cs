@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service.Common
 {
-    public interface ITcpSender
+    public interface IServer
     {
-        void Send(string message, string host, int port);
+        bool IsRunning { get; }
 
-        Task SendAsync(string message, string host, int port);
+        void Start(string route, Action<object, object> callback, object state);
+
+        void Stop();
     }
 }

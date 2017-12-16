@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service
 {
-    public class TcpServer : ITcpServer
+    public class TcpServer : IServer
     {
         private TcpListener listener;
 
@@ -26,7 +26,7 @@ namespace Notifications.Service
             listener = new TcpListener(address, port);
         }
 
-        public void Start(Action<object, object> callback, object state)
+        public void Start(string route, Action<object, object> callback, object state)
         {
             this.callback = callback;
 

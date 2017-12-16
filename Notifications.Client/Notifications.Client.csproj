@@ -35,9 +35,6 @@
     <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -56,7 +53,11 @@
   <ItemGroup>
     <Compile Include="AppStart.cs" />
     <Compile Include="Consts\NetworkConsts.cs" />
+    <Compile Include="Consts\Routes.cs" />
     <Compile Include="IProcessIcon.cs" />
+    <Compile Include="PingListener.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ProcessIcon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -94,6 +95,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Notifications.Common\Notifications.Common.csproj">
+      <Project>{E5D688A2-971B-4998-BFB5-B0560BD59DC9}</Project>
+      <Name>Notifications.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Notifications.Models\Notifications.Models.csproj">
       <Project>{46D855D4-61A0-40EC-B790-B6940695CBF1}</Project>
       <Name>Notifications.Models</Name>

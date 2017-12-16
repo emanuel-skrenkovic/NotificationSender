@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Notifications.Client.Resources;
+﻿using Notifications.Client.Resources;
+using Notifications.Common;
 using Notifications.Models;
 using Notifications.Service;
 using Notifications.Service.Common;
@@ -26,22 +26,25 @@ namespace Notifications.Client
         private System.Drawing.Icon offIcon;
         private System.Drawing.Icon onIcon;
 
-        private ITcpServer server;
-        private ITcpService tcpService;
+        private IServer server;
+        private ISenderService senderService;
         private INetworkService networkService;
         private IWindowsNotificationService windowsNotificationService;
+        private UtilityService utility;
 
         private IconState iconState = IconState.Off;
 
-        public ProcessIcon(ITcpService tcpService, INetworkService networkService, IWindowsNotificationService windowsNotificationService)
+        public ProcessIcon(IServer server, ISenderService senderService, INetworkService networkService, IWindowsNotificationService windowsNotificationService, UtilityService utility)
         {
             ni = new NotifyIcon();
 
             ni.MouseClick += NotifyIcon_MouseClick;
 
-            this.tcpService = tcpService;
+            this.server = server;
+            this.senderService = senderService;
             this.networkService = networkService;
             this.windowsNotificationService = windowsNotificationService;
+            this.utility = utility;
 
             offIcon = new System.Drawing.Icon(Images.GreenIcon);
             onIcon = new System.Drawing.Icon(Images.RedIcon);
@@ -49,27 +52,19 @@ namespace Notifications.Client
 
         public void Display()
         {
-            if (server == null)
-            {
-                var ip = networkService.GetIpString();
-                server = new TcpServer(ip, NetworkConsts.TCP_PORT);
-                
-                if (!server.IsRunning)
-                    server.Start(ProcessRequest, null);
-            }
-
             ni.Visible = true;
             ni.Icon = offIcon;
+
+            if (server != null && !server.IsRunning)
+                server.Start(Routes.NotifyRoute, ProcessRequest, null);
         }
 
         private void ProcessRequest(object res, object state)
         {
-            var serializedMsg = res as string;
+            var message = utility.DeserializeFromObject<NotificationMessage>(res);
 
-            if (serializedMsg == null)
+            if (message == null)
                 return;
-
-            var message = JsonConvert.DeserializeObject<NotificationMessage>(serializedMsg);
 
             iconState = (message.TurnOn) ? IconState.On : IconState.Off;
 
@@ -97,9 +92,26 @@ namespace Notifications.Client
                     var message = CreateNotificationMessage();
 
                     var availableIps = await networkService.GetAvailableNetworkPcsAsync();
+                    var addressList = availableIps.Select(ip => $"{ip}{Routes.NotifyRoute}").ToList();
 
-                    await tcpService.SendBatchAsync(message, availableIps, NetworkConsts.TCP_PORT);
+                    await senderService.SendBatchAsync(message, addressList, NetworkConsts.TCP_PORT);
                 } 
+                catch (Exception ex)
+                {
+                    DisplayError();
+                }
+            }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                try
+                {
+                    var message = CreatePingRequest();
+
+                    var availableIps = await networkService.GetAvailableNetworkPcsAsync();
+                    var addressList = availableIps.Select(ip => $"{ip}{Routes.PingRoute}").ToList();
+
+                    await senderService.SendBatchAsync(message, addressList, NetworkConsts.TCP_PORT);
+                }
                 catch (Exception ex)
                 {
                     DisplayError();
@@ -124,6 +136,16 @@ namespace Notifications.Client
             return message;
         }
 
+        private PingRequest CreatePingRequest()
+        {
+            var pingRequest = new PingRequest
+            {
+                RequestorAddress = networkService.GetIpString(),
+            };
+
+            return pingRequest;
+        }
+
         private void DisplayError()
         {
             ni.BalloonTipIcon = ToolTipIcon.Info;
@@ -135,7 +157,7 @@ namespace Notifications.Client
 
         public void Dispose()
         {
-            server.Stop();
+            //server.Stop();
 
             offIcon.Dispose();
             onIcon.Dispose();

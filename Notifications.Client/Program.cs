@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Notifications.Common;
 using Notifications.Service;
 using Notifications.Service.Common;
 using System;
@@ -27,6 +28,11 @@ namespace Notifications.Client
             var icon = container.Resolve<IProcessIcon>();
 
             icon.Display();
+
+            var pingListener = new PingListener(container.Resolve<IServer>(), container.Resolve<ISenderService>(), container.Resolve<INetworkService>(), container.Resolve<UtilityService>());
+            pingListener.DoWork += pingListener.StartListen;
+
+            pingListener.RunWorkerAsync();
 
             Application.Run();
         }

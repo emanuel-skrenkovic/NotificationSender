@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service
 {
-    public class TcpSender : ITcpSender, IDisposable
+    public class TcpSender : ISender, IDisposable
     {
         private TcpClient client;
 

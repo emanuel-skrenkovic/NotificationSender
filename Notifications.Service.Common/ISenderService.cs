@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service.Common
 {
-    public interface ITcpService
+    public interface ISenderService
     {
         void Send(string message, string host, int port);
 
