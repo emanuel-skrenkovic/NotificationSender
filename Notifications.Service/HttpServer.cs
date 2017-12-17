@@ -1,4 +1,5 @@
-﻿using Notifications.Service.Common;
+﻿using Newtonsoft.Json;
+using Notifications.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,10 +30,9 @@ namespace Notifications.Service
             baseUrl = $"http://{ipAddress}";
         }
 
-        public void Start(string route, Action<object, object> callback, object state)
+        public void Start(string route, Func<object, object, object> callback, object state)
         {
-            controller.RegisterRoute(route, callback);
-            listener.Prefixes.Add($"{baseUrl}{route}");
+            InitializeRoute(route, callback);
 
             if (isRunning != true)
                 listener.Start();
@@ -66,8 +66,33 @@ namespace Notifications.Service
             {
                 string content = inputStream.ReadToEndAsync().Result;
 
-                controller.HandleRouting(httpMessage.RawUrl, content);
+                var result = controller.HandleRouting(httpMessage.RawUrl, content);
+
+                if (result == null)
+                    return;
+
+                SetResponse(result, context.Response);
             }
+        }
+
+        private void SetResponse(object respObj, HttpListenerResponse response)
+        {
+            var output = response.OutputStream;
+
+            var serializedRespObj = JsonConvert.SerializeObject(respObj);
+            var resp = Encoding.UTF8.GetBytes(serializedRespObj);
+
+            response.ContentLength64 = resp.Length;
+            response.StatusCode = 200;
+
+            output.Write(resp, 0, resp.Length);
+        }
+
+        private void InitializeRoute(string route, Func<object, object, object> callback)
+        {
+            controller.RegisterRoute(route, callback);
+
+            listener.Prefixes.Add($"{baseUrl}{route}");
         }
     }
 }

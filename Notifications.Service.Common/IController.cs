@@ -8,8 +8,8 @@ namespace Notifications.Service.Common
 {
     public interface IController
     {
-        void HandleRouting<TMessage>(string route, TMessage message);
+        object HandleRouting<TMessage>(string route, TMessage message);
 
-        void RegisterRoute(string route, Action<object, object> callback);
+        void RegisterRoute(string route, Func<object, object, object> callback);
     }
 }

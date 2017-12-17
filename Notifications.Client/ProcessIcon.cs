@@ -59,12 +59,12 @@ namespace Notifications.Client
                 server.Start(Routes.NotifyRoute, ProcessRequest, null);
         }
 
-        private void ProcessRequest(object res, object state)
+        private object ProcessRequest(object res, object state)
         {
             var message = utility.DeserializeFromObject<NotificationMessage>(res);
 
             if (message == null)
-                return;
+                return null;
 
             iconState = (message.TurnOn) ? IconState.On : IconState.Off;
 
@@ -81,6 +81,8 @@ namespace Notifications.Client
             {
                 ni.Icon = offIcon;
             }
+
+            return null;
         }
 
         private async void NotifyIcon_MouseClick(object sender, MouseEventArgs e)

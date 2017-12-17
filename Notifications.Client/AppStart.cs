@@ -20,6 +20,10 @@ namespace Notifications.Client
 
             RegisterServiceTypes(builder);
 
+            // server
+
+            RegisterServer(builder, "192.168.5.12");
+
             // windows forms
 
             RegisterFormsTypes(builder);
@@ -29,9 +33,6 @@ namespace Notifications.Client
 
         private static void RegisterServiceTypes(ContainerBuilder builder)
         {
-            builder.Register((c, p) => new HttpServer("192.168.5.12"))
-                .As<IServer>().SingleInstance();
-
             builder.RegisterType<WindowsNotificationService>()
                .As<IWindowsNotificationService>();
 
@@ -51,6 +52,12 @@ namespace Notifications.Client
         {
             builder.RegisterType<ProcessIcon>()
                 .As<IProcessIcon>();
+        }
+
+        private static void RegisterServer(ContainerBuilder builder, string address)
+        {
+            builder.Register((c, p) => new HttpServer(address))
+                .As<IServer>().SingleInstance(); 
         }
     }
 }

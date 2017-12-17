@@ -39,19 +39,19 @@ namespace Notifications.Client
             server.Stop();
         }
 
-        private void HandlePing(object res, object state)
+        private PingResponse HandlePing(object res, object state)
         {
             var pingReq = utility.DeserializeFromObject<PingRequest>(res);
 
             if (pingReq == null)
-                return;
+                return null;
 
             var pingResponse = new PingResponse
             {
                 Address = networkService.GetIpString(),
             };
 
-            senderService.Send(pingResponse, $"{pingReq.RequestorAddress}/ping/", NetworkConsts.TCP_PORT + 1);
+            return pingResponse;
         }
     }
 }

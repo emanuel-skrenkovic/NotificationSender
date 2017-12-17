@@ -15,7 +15,7 @@ namespace Notifications.Service
     {
         private TcpListener listener;
 
-        private Action<object, object> callback;
+        private Func<object, object, object> callback;
         private bool isRunning;
 
         public bool IsRunning { get { return isRunning; } }
@@ -26,7 +26,7 @@ namespace Notifications.Service
             listener = new TcpListener(address, port);
         }
 
-        public void Start(string route, Action<object, object> callback, object state)
+        public void Start(string route, Func<object, object, object> callback, object state)
         {
             this.callback = callback;
 
