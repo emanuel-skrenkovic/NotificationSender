@@ -10,6 +10,6 @@ namespace Notifications.Service.Common
     {
         object HandleRouting<TMessage>(string route, TMessage message);
 
-        void RegisterRoute(string route, Func<object, object, object> callback);
+        void RegisterRoute(string route, Delegate callback);
     }
 }

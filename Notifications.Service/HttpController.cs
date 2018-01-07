@@ -9,14 +9,14 @@ namespace Notifications.Service
 {
     public class HttpController : IController
     {
-        private Dictionary<string, Func<object, object, object>> registeredRoutes;
+        private Dictionary<string, Delegate> registeredRoutes;
 
         private string baseRoute;
 
         public HttpController(string baseRoute)
         {
             this.baseRoute = baseRoute;
-            registeredRoutes = new Dictionary<string, Func<object, object, object>>();
+            registeredRoutes = new Dictionary<string, Delegate>();
         }
 
         public object HandleRouting<TMessage>(string route, TMessage message)
@@ -26,10 +26,10 @@ namespace Notifications.Service
             if (action == null)
                 return null;
 
-            return action.Invoke(message, null);
+            return action.DynamicInvoke(message);
         }
 
-        public void RegisterRoute(string routeName, Func<object, object, object> callback)
+        public void RegisterRoute(string routeName, Delegate callback)
         {
             string fullRouteName = GetFullRouteName(routeName);
             
@@ -39,7 +39,7 @@ namespace Notifications.Service
             }
         }
 
-        private Func<object, object, object> FindRoute(string route)
+        private Delegate FindRoute(string route)
         {
             string fullRouteName = GetFullRouteName(route); 
 

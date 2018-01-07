@@ -56,7 +56,7 @@ namespace Notifications.Client
             ni.Icon = offIcon;
 
             if (server != null && !server.IsRunning)
-                server.Start(Routes.NotifyRoute, ProcessRequest, null);
+                server.Start(Routes.NotifyRoute, (Func<object, object, object>)ProcessRequest, null);
         }
 
         private object ProcessRequest(object res, object state)
@@ -96,7 +96,8 @@ namespace Notifications.Client
                     var availableIps = await networkService.GetAvailableNetworkPcsAsync();
                     var addressList = availableIps.Select(ip => $"{ip}{Routes.NotifyRoute}").ToList();
 
-                    await senderService.SendBatchAsync(message, addressList, NetworkConsts.TCP_PORT);
+                    senderService.Send<NotificationMessage, object>(message, addressList.First(), NetworkConsts.TCP_PORT);
+                    //await senderService.SendBatchAsync<NotificationMessage, object>(message, addressList, NetworkConsts.TCP_PORT);
                 } 
                 catch (Exception ex)
                 {
@@ -112,7 +113,7 @@ namespace Notifications.Client
                     var availableIps = await networkService.GetAvailableNetworkPcsAsync();
                     var addressList = availableIps.Select(ip => $"{ip}{Routes.PingRoute}").ToList();
 
-                    await senderService.SendBatchAsync(message, addressList, NetworkConsts.TCP_PORT);
+                    await senderService.SendBatchAsync<PingRequest, PingResponse>(message, addressList, NetworkConsts.TCP_PORT);
                 }
                 catch (Exception ex)
                 {

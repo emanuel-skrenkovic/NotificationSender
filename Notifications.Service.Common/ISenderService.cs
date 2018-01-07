@@ -8,20 +8,28 @@ namespace Notifications.Service.Common
 {
     public interface ISenderService
     {
-        void Send(string message, string host, int port);
+        TResponse Send<TResponse>(string message, string host, int port) where TResponse : class;
 
-        void Send<TMessage>(TMessage messageObj, string host, int port);
+        TResponse Send<TMessage, TResponse>(TMessage messageObj, string host, int port)
+            where TMessage : class
+            where TResponse : class;
 
-        Task SendAsync(string message, string host, int port);
+        Task<TResponse> SendAsync<TResponse>(string message, string host, int port) where TResponse : class;
 
-        Task SendAsync<TMessage>(TMessage messageObj, string host, int port);
+        Task<TResponse> SendAsync<TMessage, TResponse>(TMessage messageObj, string host, int port)
+            where TMessage : class
+            where TResponse : class;
 
-        void SendBatch(string message, List<string> hosts, int port);
+        List<TResponse> SendBatch<TResponse>(string message, List<string> hosts, int port) where TResponse : class;
 
-        void SendBatch<TMessage>(TMessage messageObj, List<string> hosts, int port);
+        List<TResponse> SendBatch<TMessage, TResponse>(TMessage messageObj, List<string> hosts, int port)
+            where TMessage : class
+            where TResponse : class;
 
-        Task SendBatchAsync(string message, List<string> hosts, int port);
+        Task<List<TResponse>> SendBatchAsync<TResponse>(string message, List<string> hosts, int port) where TResponse : class;
 
-        Task SendBatchAsync<TMessage>(TMessage messageObj, List<string> hosts, int port);
+        Task<List<TResponse>> SendBatchAsync<TMessage, TResponse>(TMessage messageObj, List<string> hosts, int port)
+            where TMessage : class
+            where TResponse : class;
     }
 }

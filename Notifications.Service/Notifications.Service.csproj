@@ -47,11 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpController.cs" />
-    <Compile Include="HttpSender.cs" />
+    <Compile Include="HttpClient.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="HttpService.cs" />
     <Compile Include="NetworkService.cs" />
-    <Compile Include="TcpSender.cs" />
+    <Compile Include="TcpClient.cs" />
     <Compile Include="TcpServer.cs" />
     <Compile Include="TcpService.cs" />
     <Compile Include="WindowsNotificationService.cs" />
@@ -63,11 +63,15 @@
   <ItemGroup>
     <ProjectReference Include="..\Notifications.Models\Notifications.Models.csproj">
       <Project>{46D855D4-61A0-40EC-B790-B6940695CBF1}</Project>
-      <Name>Notification.Models</Name>
+      <Name>Notifications.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\Notifications.Service.Common\Notifications.Service.Common.csproj">
       <Project>{2FF7404D-E80B-459C-A024-09F47B97015E}</Project>
       <Name>Notifications.Service.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Test\Notifications.Test.Service\Notifications.Test.Service.fsproj">
+      <Project>{d145e9e8-9afd-4bdb-8ce6-659e3618ebc4}</Project>
+      <Name>Notifications.Test.Service</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -31,7 +31,7 @@ namespace Notifications.Client
         public void StartListen(object sender, DoWorkEventArgs e)   
         {
             if (server != null)
-                server.Start(Routes.PingRoute, HandlePing, null);
+                server.Start(Routes.PingRoute, (Func<object, object, PingResponse>)HandlePing, null);
         }
 
         public void StopListen(object sender, DoWorkEventArgs e)

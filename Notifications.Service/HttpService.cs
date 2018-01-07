@@ -10,75 +10,99 @@ namespace Notifications.Service
 {
     public class HttpService : ISenderService
     {
-        private ISender client;
+        private IClient client;
 
-        public HttpService(ISender client)
+        public HttpService(IClient client)
         {
-            this.client = client;           
+            this.client = client;
         }
 
-        public void Send(string message, string host, int port)
+        public TResponse Send<TResponse>(string message, string host, int port) where TResponse : class
         {
-            client.Send(message, host, port);
+            return client.Send<TResponse>(message, host, port);
         }
 
-        public void Send<TMessage>(TMessage messageObj, string host, int port)
+        public TResponse Send<TMessage, TResponse>(TMessage messageObj, string host, int port)
+            where TMessage : class
+            where TResponse : class
         {
             string serializedMessage = JsonConvert.SerializeObject(messageObj);
 
-            client.Send(serializedMessage, host, port);
+            Test.Service.Http.IClient test2 = new Test.Service.Http.HttpClient() as Test.Service.Http.IClient;
+            //var test = new Test.Service.Http.HttpClient();
+            return test2.Send<TResponse>(serializedMessage, host, port);
+
+            //return client.Send<TResponse>(serializedMessage, host, port);
         }
 
-        public Task SendAsync(string message, string host, int port)
+        public Task<TResponse> SendAsync<TResponse>(string message, string host, int port) where TResponse : class
         {
-            return client.SendAsync(message, host, port);
+            return client.SendAsync<TResponse>(message, host, port);
         }
 
-        public Task SendAsync<TMessage>(TMessage messageObj, string host, int port)
+        public Task<TResponse> SendAsync<TMessage, TResponse>(TMessage messageObj, string host, int port)
+            where TMessage : class
+            where TResponse : class
         {
             string serializedMessage = JsonConvert.SerializeObject(messageObj);
 
-            return client.SendAsync(serializedMessage, host, port);
+            return client.SendAsync<TResponse>(serializedMessage, host, port);
         }
 
-        public void SendBatch(string message, List<string> hosts, int port)
+        public List<TResponse> SendBatch<TResponse>(string message, List<string> hosts, int port) where TResponse : class
         {
-            foreach (var host in hosts)
-            {
-                Send(message, host, port);
-            }
-        }
-
-        public void SendBatch<TMessage>(TMessage messageObj, List<string> hosts, int port)
-        {
-            foreach (var host in hosts)
-            {
-                Send(messageObj, host, port);
-            }
-        }
-
-        public Task SendBatchAsync(string message, List<string> hosts, int port)
-        {
-            var taskList = new List<Task>();
+            var result = new List<TResponse>();
 
             foreach (var host in hosts)
             {
-                taskList.Add(SendAsync(message, host, port));
+                result.Add(Send<TResponse>(message, host, port));
             }
 
-            return Task.WhenAll(taskList);
+            return result;
         }
 
-        public Task SendBatchAsync<TMessage>(TMessage messageObj, List<string> hosts, int port)
+        public List<TResponse> SendBatch<TMessage, TResponse>(TMessage messageObj, List<string> hosts, int port)
+            where TMessage : class
+            where TResponse : class
         {
-            var taskList = new List<Task>();
+            var result = new List<TResponse>();
 
             foreach (var host in hosts)
             {
-                taskList.Add(SendAsync(messageObj, host, port));
+                result.Add(Send<TMessage, TResponse>(messageObj, host, port));
             }
 
-            return Task.WhenAll(taskList);
+            return result;
+        }
+
+        public async Task<List<TResponse>> SendBatchAsync<TResponse>(string message, List<string> hosts, int port) where TResponse : class
+        {
+            var taskList = new List<Task<TResponse>>();
+
+            foreach (var host in hosts)
+            {
+                taskList.Add(SendAsync<TResponse>(message, host, port));
+            }
+
+            var result = await Task.WhenAll(taskList);
+
+            return result.ToList();
+        }
+
+        public async Task<List<TResponse>> SendBatchAsync<TMessage, TResponse>(TMessage messageObj, List<string> hosts, int port)
+            where TMessage : class
+            where TResponse : class
+        {
+            var taskList = new List<Task<TResponse>>();
+
+            foreach (var host in hosts)
+            {
+                taskList.Add(SendAsync<TMessage, TResponse>(messageObj, host, port));
+            }
+
+            var result = await Task.WhenAll(taskList);
+
+            return result.ToList();
         }
     }
 }

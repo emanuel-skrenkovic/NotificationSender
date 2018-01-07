@@ -42,8 +42,8 @@ namespace Notifications.Client
             builder.RegisterType<HttpService>()
                 .As<ISenderService>();
 
-            builder.RegisterType<HttpSender>()
-                .As<ISender>();
+            builder.RegisterType<HttpClient>()
+                .As<IClient>();
 
             builder.RegisterType<UtilityService>();
         }

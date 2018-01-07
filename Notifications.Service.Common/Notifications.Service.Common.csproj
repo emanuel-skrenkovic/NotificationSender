@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="IController.cs" />
     <Compile Include="INetworkService.cs" />
-    <Compile Include="ISender.cs" />
+    <Compile Include="IClient.cs" />
     <Compile Include="ISenderService.cs" />
     <Compile Include="IServer.cs" />
     <Compile Include="IWindowsNotificationService.cs" />

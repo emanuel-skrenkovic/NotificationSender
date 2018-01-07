@@ -111,6 +111,10 @@
       <Project>{A6F5106F-41AA-4270-B264-F66A2BE0C0FB}</Project>
       <Name>Notifications.Service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Test\Notifications.Test.Service\Notifications.Test.Service.fsproj">
+      <Project>{d145e9e8-9afd-4bdb-8ce6-659e3618ebc4}</Project>
+      <Name>Notifications.Test.Service</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\green.ico" />

@@ -11,83 +11,83 @@ using System.Threading.Tasks;
 
 namespace Notifications.Service
 {
-    public class TcpServer : IServer
-    {
-        private TcpListener listener;
+    //public class TcpServer : IServer
+    //{
+    //    private TcpListener listener;
 
-        private Func<object, object, object> callback;
-        private bool isRunning;
+    //    private Func<object, object, object> callback;
+    //    private bool isRunning;
 
-        public bool IsRunning { get { return isRunning; } }
+    //    public bool IsRunning { get { return isRunning; } }
 
-        public TcpServer(string ipAddress, int port)
-        {
-            var address = IPAddress.Parse(ipAddress);
-            listener = new TcpListener(address, port);
-        }
+    //    public TcpServer(string ipAddress, int port)
+    //    {
+    //        var address = IPAddress.Parse(ipAddress);
+    //        listener = new TcpListener(address, port);
+    //    }
 
-        public void Start(string route, Func<object, object, object> callback, object state)
-        {
-            this.callback = callback;
+    //    public void Start(string route, Func<object, object, object> callback, object state)
+    //    {
+    //        this.callback = callback;
 
-            isRunning = true;
+    //        isRunning = true;
 
-            listener.Start();
-            listener.BeginAcceptTcpClient(ProcessResult, state);
-        }
+    //        listener.Start();
+    //        listener.BeginAcceptTcpClient(ProcessResult, state);
+    //    }
 
-        public void Stop()
-        {
-            listener.Stop();
-            isRunning = false;
-        }
+    //    public void Stop()
+    //    {
+    //        listener.Stop();
+    //        isRunning = false;
+    //    }
 
-        private void ProcessResult(IAsyncResult res)
-        {
-            InvokeCallback(res);
+    //    private void ProcessResult(IAsyncResult res)
+    //    {
+    //        InvokeCallback(res);
 
-            listener.Start();
-            listener.BeginAcceptTcpClient(ProcessResult, res.AsyncState);
-        }
+    //        listener.Start();
+    //        listener.BeginAcceptTcpClient(ProcessResult, res.AsyncState);
+    //    }
 
-        private void InvokeCallback(IAsyncResult res)
-        {
-            using (var client = listener.EndAcceptTcpClient(res))
-            using (var ns = client.GetStream())
-            {
-                var message = GetStringMessage(ns);
+    //    private void InvokeCallback(IAsyncResult res)
+    //    {
+    //        using (var client = listener.EndAcceptTcpClient(res))
+    //        using (var ns = client.GetStream())
+    //        {
+    //            var message = GetStringMessage(ns);
 
-                try
-                {
-                    callback.Invoke(message, res.AsyncState);
-                }
-                catch (Exception e)
-                {
-                    throw new NotSupportedException();
-                }
+    //            try
+    //            {
+    //                callback.Invoke(message, res.AsyncState);
+    //            }
+    //            catch (Exception e)
+    //            {
+    //                throw new NotSupportedException();
+    //            }
 
-                client.Close();
-            }
-        }
+    //            client.Close();
+    //        }
+    //    }
 
-        private string GetStringMessage(NetworkStream nStream)
-        {
-            return GetStringMessageAsync(nStream).Result;
-        }
+    //    private string GetStringMessage(NetworkStream nStream)
+    //    {
+    //        return GetStringMessageAsync(nStream).Result;
+    //    }
 
-        private async Task<string> GetStringMessageAsync(NetworkStream nStream)
-        {
-            using (var streamReader = new StreamReader(nStream))
-            {
-                var stringMessage = await streamReader.ReadToEndAsync();
+    //    private async Task<string> GetStringMessageAsync(NetworkStream nStream)
+    //    {
+    //        using (var streamReader = new StreamReader(nStream))
+    //        {
+    //            var stringMessage = await streamReader.ReadToEndAsync();
 
-                return SanitizeResultString(stringMessage);
-            }
-        }
+    //            return SanitizeResultString(stringMessage);
+    //        }
+    //    }
 
-        private string SanitizeResultString(string message)
-        {
-            return Regex.Replace(message, @"\t|\n|\r", "");
-        }
-    }
+    //    private string SanitizeResultString(string message)
+    //    {
+    //        return Regex.Replace(message, @"\t|\n|\r", "");
+    //    }
+    //}
 }

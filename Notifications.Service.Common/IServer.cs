@@ -10,7 +10,7 @@ namespace Notifications.Service.Common
     {
         bool IsRunning { get; }
 
-        void Start(string route, Func<object, object, object> callback, object state);
+        void Start(string route, Delegate callback, object state);
 
         void Stop();
     }

@@ -30,7 +30,7 @@ namespace Notifications.Service
             baseUrl = $"http://{ipAddress}";
         }
 
-        public void Start(string route, Func<object, object, object> callback, object state)
+        public void Start(string route, Delegate callback, object state)
         {
             InitializeRoute(route, callback);
 
@@ -88,7 +88,7 @@ namespace Notifications.Service
             output.Write(resp, 0, resp.Length);
         }
 
-        private void InitializeRoute(string route, Func<object, object, object> callback)
+        private void InitializeRoute(string route, Delegate callback)
         {
             controller.RegisterRoute(route, callback);
 
