@@ -48,7 +48,7 @@ module Http =
                     let! stringContent = content.ReadAsStringAsync() |> Async.AwaitTask
                     return JsonConvert.DeserializeObject<'T>(stringContent)
                 } 
-            
+ 
             getSerializedResponse |> Async.StartAsTask
             
         member this.Send message host (port: int): 'TResponse = 
@@ -60,11 +60,7 @@ module Http =
 
             let httpResponse = getHttpResponse |> Async.RunSynchronously
 
-            let getResult = async {
-                return! GetResponseObjAsync(httpResponse) |> Async.AwaitTask
-            }
-
-            getResult |> Async.RunSynchronously
+            GetResponseObjAsync(httpResponse).Result 
 
         member this.SendAsync message host (port: int): Task<'TResponse> = 
             let request = CreateRequestMessage message host HttpMethod.Post
@@ -75,11 +71,7 @@ module Http =
 
             let httpResponse = getHttpResponse |> Async.RunSynchronously
 
-            let result = async {
-                return! GetResponseObjAsync(httpResponse) |> Async.AwaitTask
-            }
-
-            result |> Async.StartAsTask 
+            GetResponseObjAsync(httpResponse) 
 
         interface IClient with
             member this.Send message host port = this.Send message host port
