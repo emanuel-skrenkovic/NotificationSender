@@ -7,6 +7,8 @@ module Http =
     open System.Threading.Tasks
     open System.Collections.Generic
     open System.Net
+    open System.Text
+    open System.IO
 
     type IClient =
         abstract member Send: string -> string -> int -> 'T 
@@ -167,5 +169,37 @@ module Http =
     type HttpServer(ipAddress: string) =
         let baseUrl: string = "http//" + ipAddress 
 
-        let httpListener: HttpListener = new HttpListener()
+        let listener: HttpListener = new HttpListener()
         let controller: HttpController = new HttpController(baseUrl)
+
+        let InitializeRoute (route: string) (callback: Delegate) =
+            controller.RegisterRoute route callback
+            listener.Prefixes.Add(baseUrl + route)
+
+        let SetResponse respObj (response: HttpListenerResponse) =
+            let output = response.OutputStream
+            let serializedRespObj = JsonConvert.SerializeObject(respObj)
+            let resp = Encoding.UTF8.GetBytes(serializedRespObj)
+
+            response.ContentLength64 = int64(resp.Length) |> ignore
+            response.StatusCode = 200 |> ignore
+
+            output.Write(resp, 0, resp.Length)
+
+        let InvokeCallback (res: IAsyncResult) =
+            let context = listener.EndGetContext(res)
+            let httpMessage = context.Request
+            
+            use inputStream = new StreamReader(httpMessage.InputStream)
+            let content = inputStream.ReadToEndAsync().Result;
+
+            let result = controller.HandleRouting httpMessage.RawUrl content
+
+            SetResponse(result, context.Response)
+
+        let rec ProcessResult (res: IAsyncResult) =
+            InvokeCallback res |> ignore
+
+            listener.Start() |> ignore
+
+
